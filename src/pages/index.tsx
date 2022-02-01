@@ -22,6 +22,7 @@ export default function Home() {
   const [incorrectAmt, setIncorrectAmt] = useState(0);
   const [finished, setFinished] = useState(false);
   const [countdownActive, setCountdownActive] = useState(false);
+  const [savedWPM, setSavedWPM] = useState(0);
 
   useEffect(() => {
     setCharAt(0);
@@ -76,13 +77,19 @@ export default function Home() {
         setIncorrectLetter(true);
       }
     }
-    
   })
+  window.addEventListener('keyup', (key) => {
+    if (key.key == "Enter") {
+      setCountdownActive(true);
+      setFinished(false);
+    }
+  });
   useEffect(() => {
     if (phraseArr.length > 0 && charAt == phraseArr.length) {
       setWordsCompleted(v => v + 1);
       setActive(false);
       setFinished(true);
+      setSavedWPM(Math.round(wpm * 60));
     }
   }, [charAt, active])
   return (
@@ -100,11 +107,15 @@ export default function Home() {
               <th>WPM</th>
             </tr>
             <tr className="border-b-[1px] border-gray-500">
-              <td>Shaan Thakker</td>
+              <td className="font-semibold">You</td>
+              <td className="font-semibold">{savedWPM}</td>
+            </tr>
+            <tr className="border-b-[1px] border-gray-500">
+              <td>Temp 1</td>
               <td>150</td>
             </tr>
             <tr className="border-b-[1px] border-gray-500">
-              <td>Jon Doe</td>
+              <td>Temp 2</td>
               <td>20</td>
             </tr>
           </table>
@@ -131,7 +142,6 @@ export default function Home() {
         </div>
         {active && <p className="font-semibold text-gray-800">{Math.round(wpm * 60)} wpm</p>}
         {active && <p className="font-semibold text-gray-800">{100 - Math.round(incorrectAmt /  phraseArr.length * 100)}% accuracy</p>}
-        <p>debug only: {seconds}</p>
       </div>
     </div>
   )
