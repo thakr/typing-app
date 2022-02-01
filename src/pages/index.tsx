@@ -78,12 +78,14 @@ export default function Home() {
       }
     }
   })
-  window.addEventListener('keyup', (key) => {
-    if (key.key == "Enter") {
-      setCountdownActive(true);
-      setFinished(false);
-    }
-  });
+  useEffect(() => {
+    window.addEventListener('keyup', (key) => {
+      if (key.key == "Enter") {
+        setCountdownActive(true);
+        setFinished(false);
+      }
+    });
+  }, [])
   useEffect(() => {
     if (phraseArr.length > 0 && charAt == phraseArr.length) {
       setWordsCompleted(v => v + 1);
@@ -115,7 +117,7 @@ export default function Home() {
               <td>150</td>
             </tr>
             <tr className="border-b-[1px] border-gray-500">
-              <td>Temp 2</td>
+              <td>Temp</td>
               <td>20</td>
             </tr>
           </table>
