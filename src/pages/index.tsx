@@ -23,8 +23,11 @@ export default function Home() {
   const [finished, setFinished] = useState(false);
   const [countdownActive, setCountdownActive] = useState(false);
   const [savedWPM, setSavedWPM] = useState(0);
+  const [savedAccuracy, setSavedAccuracy] = useState(0);
 
   useEffect(() => {
+    setSavedWPM(Math.round(wpm * 60));
+    setSavedAccuracy(100 - Math.round(incorrectAmt /  phraseArr.length * 100));
     setCharAt(0);
     setIncorrectLetter(false);
     setSeconds(0);
@@ -91,7 +94,7 @@ export default function Home() {
       setWordsCompleted(v => v + 1);
       setActive(false);
       setFinished(true);
-      setSavedWPM(Math.round(wpm * 60));
+      
     }
   }, [charAt, active])
   return (
@@ -107,18 +110,22 @@ export default function Home() {
             <tr className="border-b-[1px] border-gray-500 text-left">
               <th className="w-[90%]">Name</th>
               <th>WPM</th>
+              <th>Accuracy</th>
             </tr>
             <tr className="border-b-[1px] border-gray-500">
               <td className="font-semibold">You</td>
               <td className="font-semibold">{savedWPM}</td>
+              <td className="font-semibold">{savedAccuracy}%</td>
             </tr>
             <tr className="border-b-[1px] border-gray-500">
               <td>Temp 1</td>
               <td>150</td>
+              <td>90%</td>
             </tr>
             <tr className="border-b-[1px] border-gray-500">
               <td>Temp</td>
               <td>20</td>
+              <td>95%</td>
             </tr>
           </table>
         </div>
