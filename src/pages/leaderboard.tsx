@@ -11,6 +11,8 @@ export default function leaderboard({referer, leaderboard}) {
   const [name, setName] = useState('');
   const [submitting,setSubmitting] = useState(false);
   const [errorTxt, setErrorTxt] = useState("");
+  console.log('referer: ' + referer);
+  console.log('host: ' + process.env.HOST)
   const [view, setView] = useState(referer == process.env.HOST ? "addName" : "leaderboard");
   leaderboard.sort((a,b) => {
     return b.wpm - a.wpm;

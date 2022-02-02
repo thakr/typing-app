@@ -36,12 +36,19 @@ export default function Home() {
       router.push({pathname: '/leaderboard', query: {'savedWPM': Math.round(wpm * 60), 'savedAccuracy': 100 - Math.round(incorrectAmt /  phraseArr.length * 100)}})
     }
   }, [finished, wpm, incorrectAmt])
+  const handleEnter = (key) => {
+    if (key.key == "Enter") {
+      setCountdownActive(true);
+      setFinished(false);
+      window.removeEventListener('keyup', handleEnter, false)
+    }
+  }
   useEffect(() => {
     if (countdownActive) {
       countdownSecs > 0 ? setTimeout(() => setCountdownSecs(v => v - 1), 1000) : setTimeout(() => {
         setActive(true);
         setCountdownActive(false);
-        setCountdownSecs(3);
+        setCountdownSecs(3);        
       }, 500);
     }
     
@@ -78,12 +85,7 @@ export default function Home() {
     }
   })
   useEffect(() => {
-    window.addEventListener('keyup', (key) => {
-      if (key.key == "Enter") {
-        setCountdownActive(true);
-        setFinished(false);
-      }
-    });
+    window.addEventListener('keyup', handleEnter, false);
   }, [])
   useEffect(() => {
     if (phraseArr.length > 0 && charAt == phraseArr.length) {
