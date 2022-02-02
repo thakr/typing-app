@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 import { motion } from "framer-motion";
 import prisma from '../db';
 
-export default function Leaderboard({referer, leaderboard}) {
+export default function leaderboard({referer, leaderboard}) {
   const router = useRouter()
   const {savedWPM, savedAccuracy} = router.query;
   const [name, setName] = useState('');
