@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import useKeyPress from '../useKeyPress';
 const randomWords = require('random-words');
 import { Dialog } from '@headlessui/react'
+import { useRouter } from 'next/router'
 
 export default function Home() {
   
@@ -22,24 +23,19 @@ export default function Home() {
   const [incorrectAmt, setIncorrectAmt] = useState(0);
   const [finished, setFinished] = useState(false);
   const [countdownActive, setCountdownActive] = useState(false);
-  const [savedWPM, setSavedWPM] = useState(0);
-  const [savedAccuracy, setSavedAccuracy] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
-    setSavedWPM(Math.round(wpm * 60));
-    setSavedAccuracy(100 - Math.round(incorrectAmt /  phraseArr.length * 100));
-    setCharAt(0);
-    setIncorrectLetter(false);
-    setSeconds(0);
-    setWordsCompleted(0);
-    setwpm(0);
-    setIncorrectAmt(0);
-
-    let randwords = randomWords({ min: 15, max: 50, join: ' ' })
+    let randwords = randomWords({ min: 1, max: 5, join: ' ' }) //min15 max50
     randwords += ".";
     randwords = randwords.charAt(0).toUpperCase() + randwords.slice(1);
     setPhraseArr(randwords.split(''))
-  }, [finished])
+  }, [])
+  useEffect(() => {
+    if (finished == true) {
+      router.push({pathname: '/leaderboard', query: {'savedWPM': Math.round(wpm * 60), 'savedAccuracy': 100 - Math.round(incorrectAmt /  phraseArr.length * 100)}})
+    }
+  }, [finished, wpm, incorrectAmt])
   useEffect(() => {
     if (countdownActive) {
       countdownSecs > 0 ? setTimeout(() => setCountdownSecs(v => v - 1), 1000) : setTimeout(() => {
@@ -94,48 +90,12 @@ export default function Home() {
       setWordsCompleted(v => v + 1);
       setActive(false);
       setFinished(true);
-      
     }
   }, [charAt, active])
   return (
     <div className="container flex items-center p-4 mx-auto min-h-screen justify-center">
       <motion.div className={`absolute flex w-[100%] h-[100%] items-center justify-center bg-blue-900 flex-col`} animate={countdownActive ? {opacity: 0.9} : {opacity: 0, display: 'none'}}>        
         <motion.h1 className={`font-bold text-6xl z-10 text-white opacity-0`} animate={countdownActive ? {opacity: 1} : {opacity: 0}}>{countdownSecs}</motion.h1>
-      </motion.div>
-      <motion.div className={`absolute flex flex-col w-[100%] h-[100%] items-center justify-center bg-blue-900 opacity-0 invisible`} animate={finished ? {visibility: "initial",opacity: 1} : {visibility: 'hidden',opacity:0}}>
-        <h1 className={`font-bold text-4xl z-10 text-white mb-5`}>Nice job!</h1>
-        <div className="bg-white rounded-lg shadow-lg w-96 mb-5 h-96 overflow-auto">
-          <h1 className="font-bold text-xl mb-2 text-white p-4 bg-gray-900 overflow-hidden">Leaderboard</h1>
-          <table className="mx-2" cellPadding={'10'}>
-            <tr className="border-b-[1px] border-gray-500 text-left">
-              <th className="w-[90%]">Name</th>
-              <th>WPM</th>
-              <th>Accuracy</th>
-            </tr>
-            <tr className="border-b-[1px] border-gray-500">
-              <td className="font-semibold">You</td>
-              <td className="font-semibold">{savedWPM}</td>
-              <td className="font-semibold">{savedAccuracy}%</td>
-            </tr>
-            <tr className="border-b-[1px] border-gray-500">
-              <td>Temp 1</td>
-              <td>150</td>
-              <td>90%</td>
-            </tr>
-            <tr className="border-b-[1px] border-gray-500">
-              <td>Temp</td>
-              <td>20</td>
-              <td>95%</td>
-            </tr>
-          </table>
-        </div>
-        <motion.button className="bg-white shadow-lg text-xl py-1 px-5 rounded-3xl font-bold cursor-pointer border-white text-black border-2 hover:bg-transparent ease-in-out transition hover:text-white" onClick={() => {
-          setCountdownActive(true);
-          setFinished(false);
-        }}>Play again</motion.button>
-      <div>
-
-      </div>
       </motion.div>
       <div className="w-2/3">
         <h1 className="font-mono text-xl code text-left">
@@ -147,7 +107,7 @@ export default function Home() {
         </h1>
         <br />
         <div className="flex items-center justify-center">
-          <motion.button animate={!active && !finished ? {opacity: 1} : {opacity: 0, display: "none"}} className="bg-blue-900 shadow-lg text-xl py-1 px-5 rounded-3xl font-bold cursor-pointer border-blue-900 text-white border-2 hover:bg-transparent ease-in-out transition hover:text-black" onClick={() => setCountdownActive(true)}>Play</motion.button>
+          <motion.button animate={!active && !finished ? {opacity: 1} : {opacity: 0, display: "none"}} className="bg-blue-900 shadow-lg text-xl py-1 px-5 rounded-3xl font-bold cursor-pointer border-blue-900 text-white border-2 hover:bg-transparent ease-in-out transition hover:text-black" onClick={() => setCountdownActive(true)}>Begin</motion.button>
         </div>
         {active && <p className="font-semibold text-gray-800">{Math.round(wpm * 60)} wpm</p>}
         {active && <p className="font-semibold text-gray-800">{100 - Math.round(incorrectAmt /  phraseArr.length * 100)}% accuracy</p>}
