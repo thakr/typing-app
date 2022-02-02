@@ -26,7 +26,7 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    let randwords = randomWords({ min: 1, max: 5, join: ' ' }) //min15 max50
+    let randwords = randomWords({ min: 15, max: 30, join: ' ' }) 
     randwords += ".";
     randwords = randwords.charAt(0).toUpperCase() + randwords.slice(1);
     setPhraseArr(randwords.split(''))
