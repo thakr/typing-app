@@ -5,21 +5,21 @@ import { useRouter } from 'next/router'
 import { motion } from "framer-motion";
 import prisma from '../db';
 
-export default function leaderboard({referer, leaderboard}) {
+export default function leaderboard({host, referer, leaderboard}) {
   const router = useRouter()
   const {savedWPM, savedAccuracy} = router.query;
   const [name, setName] = useState('');
   const [submitting,setSubmitting] = useState(false);
   const [errorTxt, setErrorTxt] = useState("");
   console.log('referer: ' + referer);
-  console.log('host: ' + process.env.HOST)
-  const [view, setView] = useState(referer == process.env.HOST ? "addName" : "leaderboard");
+  console.log('host: ' + host)
+  const [view, setView] = useState(referer == host? "addName" : "leaderboard");
   leaderboard.sort((a,b) => {
     return b.wpm - a.wpm;
   })
   return (
       <motion.div className='flex w-[100%] h-screen items-center justify-center flex-col bg-blue-900' initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity:0}}>
-        {referer == process.env.HOST  && <h1 className={`font-bold text-4xl z-10 text-white mb-5`}>Nice job!</h1>}
+        {referer == host  && <h1 className={`font-bold text-4xl z-10 text-white mb-5`}>Nice job!</h1>}
         <div className="bg-white rounded-lg shadow-lg w-96 mb-5 h-96 overflow-auto relative">
         <h1 className="font-bold text-xl mb-2 text-white p-4 bg-gray-900 overflow-hidden">Leaderboard</h1>
         {view == "addName" ? (<div className='h-[80%] w-full bg-white absolute flex items-center flex-col'>
@@ -88,11 +88,11 @@ export default function leaderboard({referer, leaderboard}) {
             })}
 
           </table>
-          {referer == process.env.HOST && <div className='text-center'><a className='text-blue-700 hover:underline cursor-pointer text-center' onClick={() => setView("addName")}>Submit score</a></div>}
+          {referer == host && <div className='text-center'><a className='text-blue-700 hover:underline cursor-pointer text-center' onClick={() => setView("addName")}>Submit score</a></div>}
         </div>
         }
       </div>
-        <motion.button className="bg-white shadow-lg text-xl py-1 px-5 rounded-3xl font-bold cursor-pointer border-white text-black border-2 hover:bg-transparent ease-in-out transition hover:text-white" onClick={() => router.push('/')}>Play<span>{referer == process.env.HOST && " again"}</span></motion.button>
+        <motion.button className="bg-white shadow-lg text-xl py-1 px-5 rounded-3xl font-bold cursor-pointer border-white text-black border-2 hover:bg-transparent ease-in-out transition hover:text-white" onClick={() => router.push('/')}>Play<span>{referer == host && " again"}</span></motion.button>
       </motion.div>
   );
 }
@@ -108,5 +108,6 @@ export async function getServerSideProps(context) {
       ipv4: true,
     },
   })
-  return {props: {referer, leaderboard}};
+  let host = process.env.HOST;
+  return {props: {host, referer, leaderboard}};
 }
