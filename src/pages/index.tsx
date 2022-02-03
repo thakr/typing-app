@@ -2,8 +2,9 @@ import {useState, useEffect} from "react";
 import { motion } from "framer-motion";
 import useKeyPress from '../useKeyPress';
 const randomWords = require('random-words');
-import { Dialog } from '@headlessui/react'
 import { useRouter } from 'next/router'
+import ClipLoader from "react-spinners/ClipLoader";
+import axios from "axios";
 
 export default function Home() {
   
@@ -26,10 +27,13 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    let randwords = randomWords({ min: 5, max: 10, join: ' ' }) 
-    randwords += ".";
-    randwords = randwords.charAt(0).toUpperCase() + randwords.slice(1);
-    setPhraseArr(randwords.split(''))
+    axios.get("/api/generate-text")
+    .then((res) => {
+      let phrase = res.data.response
+      setPhraseArr(phrase.split(''))
+    })
+    
+    
   }, [])
   useEffect(() => {
     if (finished == true) {
@@ -100,16 +104,20 @@ export default function Home() {
         <motion.h1 className={`font-bold text-6xl z-10 text-white opacity-0`} animate={countdownActive ? {opacity: 1} : {opacity: 0}}>{countdownSecs}</motion.h1>
       </motion.div>
       <div className="w-2/3">
-        <h1 className="font-mono text-xl code text-left">
+        
         {phraseArr.length > 0 ? (
-          phraseArr.map((v,i) => {
+          <motion.h1 className="font-mono text-xl code text-left" animate={phraseArr.length > 0 ? {opacity: 1} : {opacity: 0}} initial={{opacity: 0}}>
+          {phraseArr.map((v,i) => {
             return <span key={i} className={`font-semibold text-2xl ${(charAt == i ? "underline bg-blue-100" : "no-underline")} ${(charAt > i ? "text-blue-500" : incorrectLetter && charAt == i ? "text-red-500 line-through" :"text-gray-800")}`}>{v}</span>;
-          })
-        ) : <p>loading...</p>}
-        </h1>
+          })}
+          </motion.h1>
+        ) : 
+        <motion.div className="flex items-center justify-center">
+          <ClipLoader size={50}/>
+        </motion.div>}
         <br />
         <div className="flex items-center justify-center">
-          <motion.button animate={!active && !finished ? {opacity: 1} : {opacity: 0, display: "none"}} className="bg-blue-900 shadow-lg text-xl py-1 px-5 rounded-3xl font-bold cursor-pointer border-blue-900 text-white border-2 hover:bg-transparent ease-in-out transition hover:text-black" onClick={() => setCountdownActive(true)}>Begin</motion.button>
+          <motion.button animate={!active && !finished && phraseArr.length > 0 ? {scale: 1, opacity: 1} : {scale: 0.25, opacity: 0, display: "none"}} transition={{duration: 0.5}} className="bg-blue-900 shadow-lg text-xl py-1 px-5 rounded-3xl font-bold cursor-pointer border-blue-900 text-white border-2 hover:bg-transparent ease-in-out transition hover:text-black" onClick={() => setCountdownActive(true)}>Begin</motion.button>
         </div>
         {active && <p className="font-semibold text-gray-800">{Math.round(wpm * 60)} wpm</p>}
         {active && <p className="font-semibold text-gray-800">{100 - Math.round(incorrectAmt /  phraseArr.length * 100)}% accuracy</p>}

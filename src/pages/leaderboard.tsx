@@ -19,7 +19,7 @@ export default function leaderboard({host, referer, leaderboard}) {
   return (
       <motion.div className='flex w-[100%] h-screen items-center justify-center flex-col bg-blue-900' initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity:0}}>
         {referer == host  && <h1 className={`font-bold text-4xl z-10 text-white mb-5`}>Nice job!</h1>}
-        <div className="bg-white rounded-lg shadow-lg w-96 mb-5 h-96 overflow-auto relative">
+        <motion.div className="bg-white rounded-lg shadow-lg w-96 mb-5 h-96 overflow-auto relative" initial={{scale:0.25, opacity: 0}} animate={{scale: 1, opacity: 1}} transition={{duration: 1}}>
         <h1 className="font-bold text-xl mb-2 text-white p-4 bg-gray-900 overflow-hidden">Leaderboard</h1>
         {view == "addName" ? (<div className='h-[80%] w-full bg-white absolute flex items-center flex-col'>
           <table className="mx-2 mb-10" cellPadding={'10'}>
@@ -88,15 +88,18 @@ export default function leaderboard({host, referer, leaderboard}) {
           </div>) :
         <div>
           <table className="mx-2 mb-10" cellPadding={'10'}>
-            <tr className="border-b-[1px] border-gray-500 text-left">
-              <th>Rank</th>
-              <th className="w-[90%]">Name</th>
-              <th>WPM</th>
-              <th>Accuracy</th>
-            </tr>
+            <thead>
+              <tr className="border-b-[1px] border-gray-500 text-left">
+                <th>Rank</th>
+                <th className="w-[90%]">Name</th>
+                <th>WPM</th>
+                <th>Accuracy</th>
+              </tr>
+            </thead>
+            <tbody>
             {leaderboard.map((v,i) => {
               return (
-                <tr className="border-b-[1px] border-gray-500" key={v.key}>
+                <tr className="border-b-[1px] border-gray-500" key={v.id}>
                   <td>{(i+1).toString()}</td>
                   <td>{v.name}</td>
                   <td>{v.wpm}</td>
@@ -104,12 +107,14 @@ export default function leaderboard({host, referer, leaderboard}) {
                 </tr>
               )
             })}
+            </tbody>
+           
 
           </table>
           {referer == host && <div className='text-center'><a className='text-blue-700 hover:underline cursor-pointer text-center' onClick={() => setView("addName")}>Submit score</a></div>}
         </div>
         }
-      </div>
+      </motion.div>
         <motion.button className="bg-white shadow-lg text-xl py-1 px-5 rounded-3xl font-bold cursor-pointer border-white text-black border-2 hover:bg-transparent ease-in-out transition hover:text-white" onClick={() => router.push('/')}>Play<span>{referer == host && " again"}</span></motion.button>
       </motion.div>
   );
