@@ -16,5 +16,5 @@ model LeaderEntry {
   name String @db.VarChar(50)
   wpm Int
   accuracy Int
-  ipv4 String @db.VarChar(15)
+  ipv4 String @db.VarChar(15) @unique
 }

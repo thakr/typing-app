@@ -2,20 +2,45 @@
 import prisma from "../../db";
 export default async (req, res) => {
   const ip = req.headers["x-real-ip"] || req.connection.remoteAddress;
+  const override = req.query.override;
+ 
   if (req.method = 'POST') {
     if (req.body.name && req.body.wpm && req.body.accuracy) {
-      await prisma.LeaderEntry.create({
-        data: {
-          name: req.body.name,
-          wpm: req.body.wpm,
-          accuracy: req.body.accuracy,
-          ipv4: ip
-        }
+      const sameIpUser = await prisma.LeaderEntry.findFirst({
+        where: {
+          ipv4: ip,
+        },
       })
-      res.json({status: 200, msg:'success'})
+      if (override) {
+        await prisma.LeaderEntry.update({
+          where: {
+            ipv4 : ip,
+          },
+          data: {
+            name: req.body.name,
+            wpm: req.body.wpm,
+            accuracy: req.body.accuracy,
+          }
+        })
+      } else {
+        if (sameIpUser) {
+          return res.json({status: 300, msg:'Looks like you already have an entry on your device. Overwrite it?'})
+        } else {
+          await prisma.LeaderEntry.create({
+            data: {
+              name: req.body.name,
+              wpm: req.body.wpm,
+              accuracy: req.body.accuracy,
+              ipv4: ip
+            }
+          })
+        }
+      }
+      
+      return res.json({status: 200, msg:'success'})
     } else {
-      console.log('bad req')
-      res.json({status: 400, msg:'missing information'})
+
+        return res.json({status: 400, msg:'Missing information'})
 
     }
   }

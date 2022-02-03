@@ -11,9 +11,8 @@ export default function leaderboard({host, referer, leaderboard}) {
   const [name, setName] = useState('');
   const [submitting,setSubmitting] = useState(false);
   const [errorTxt, setErrorTxt] = useState("");
-  console.log('referer: ' + referer);
-  console.log('host: ' + host)
   const [view, setView] = useState(referer == host? "addName" : "leaderboard");
+  const [override, setOverride] = useState(false);
   leaderboard.sort((a,b) => {
     return b.wpm - a.wpm;
   })
@@ -43,17 +42,36 @@ export default function leaderboard({host, referer, leaderboard}) {
                 async (e) => {
                   e.preventDefault();
                   setSubmitting(true);
-                  const res = await axios.post('/api/leaderboard', {
-                    name,
-                    wpm: parseInt(savedWPM.toString()),
-                    accuracy: parseInt(savedAccuracy.toString())
-                  })
-                  if (res.data.status == 200) {
-                    window.open('/leaderboard', '_self');
-                  }
-                  else {
-                    setErrorTxt(res.data.msg);
-                    setSubmitting(false);
+                  if (override) {
+                    const res = await axios.post('/api/leaderboard?override=true', {
+                      name,
+                      wpm: parseInt(savedWPM.toString()),
+                      accuracy: parseInt(savedAccuracy.toString())
+                    })
+                    if (res.data.status == 200) {
+                      window.open('/leaderboard', '_self');
+                    }
+                    else {
+                      setErrorTxt(res.data.msg);
+                      setSubmitting(false);
+                      setOverride(false);
+                    }
+                  } else {
+                      const res = await axios.post('/api/leaderboard', {
+                        name,
+                        wpm: parseInt(savedWPM.toString()),
+                        accuracy: parseInt(savedAccuracy.toString())
+                      })
+                      if (res.data.status == 200) {
+                        window.open('/leaderboard', '_self');
+                      }
+                      else {
+                        setErrorTxt(res.data.msg);
+                        setSubmitting(false);
+                        if (res.data.status == 300) {
+                          setOverride(true);
+                        }
+                      }
                   }
                 }
               }>
@@ -61,12 +79,12 @@ export default function leaderboard({host, referer, leaderboard}) {
                   e.preventDefault();
                   setName(e.target.value);
                 }}></input>
-                <button disabled={submitting} className="bg-blue-900 disabled:bg-gray-500 disabled:border-gray-500 shadow-lg text-md py-1 px-4 rounded-3xl font-bold cursor-pointer border-blue-900 text-white border-2 hover:bg-transparent ease-in-out transition hover:text-black">Submit</button>
+                <button disabled={submitting} className="bg-blue-900 disabled:bg-gray-500 disabled:border-gray-500 shadow-lg text-md py-1 px-4 rounded-3xl font-bold cursor-pointer border-blue-900 text-white border-2 hover:bg-transparent ease-in-out transition hover:text-black">{override ? "Override" : "Submit"}</button>
               </form>
               
             </div>
             <a className='text-blue-700 hover:underline cursor-pointer mt-5' onClick={() => setView("leaderboard")}>View full leaderboard</a>
-            <a className='text-red-700 mt-5' onClick={() => setView("leaderboard")}>{errorTxt}</a>
+            <a className='text-red-700 mt-5 mx-5' onClick={() => setView("leaderboard")}>{errorTxt}</a>
           </div>) :
         <div>
           <table className="mx-2 mb-10" cellPadding={'10'}>
