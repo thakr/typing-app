@@ -17,6 +17,6 @@ export default function Footer() {
       </div>
       
   </div>
-  <p className="text-gray-300 font-semibold py-8 px-16 md:px-52">Copyright © Shaan Thakker</p>
+  <p className="text-gray-300 font-semibold pb-8 px-16 md:px-52">Copyright © Shaan Thakker</p>
 </footer>;
 }
