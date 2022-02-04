@@ -3,7 +3,7 @@ import prisma from "../../db";
 import Cors from 'cors'
 
 const cors = Cors({
-  methods: ['GET', 'POST', 'HEAD'],
+  methods: ['GET', 'HEAD'],
 })
 
 function runMiddleware(req, res, fn) {
@@ -19,7 +19,7 @@ function runMiddleware(req, res, fn) {
 }
 
 export default async (req, res) => {
-  await runMiddleware(req,res,cors)
+  await runMiddleware(req,res,cors);
   const ip = req.headers["x-real-ip"] || req.connection.remoteAddress;
   const override = req.query.override;
  
