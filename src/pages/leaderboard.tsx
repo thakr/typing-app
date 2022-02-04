@@ -13,15 +13,17 @@ export default function leaderboard({host, referer, leaderboard}) {
   const [name, setName] = useState('');
   const [submitting,setSubmitting] = useState(false);
   const [errorTxt, setErrorTxt] = useState("");
-  const [view, setView] = useState(referer == host? "addName" : "leaderboard");
+  let addStats = referer == host && savedWPM && savedAccuracy;
+  const [view, setView] = useState(addStats ? "addName" : "leaderboard");
   const [override, setOverride] = useState(false);
   leaderboard.sort((a,b) => {
     return b.wpm - a.wpm;
   })
+  
   return (
     <div>
       <motion.div className='flex w-[100%] h-screen items-center justify-center flex-col bg-blue-900' initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity:0}}>
-        {referer == host  && <h1 className={`font-bold text-4xl z-10 text-white mb-5`}>Nice job!</h1>}
+        {addStats  && <h1 className={`font-bold text-4xl z-10 text-white mb-5`}>Nice job!</h1>}
         <motion.div className="bg-white rounded-lg shadow-lg w-96 mb-5 h-96 overflow-auto relative" initial={{scale:0.25, opacity: 0}} animate={{scale: 1, opacity: 1}} transition={{duration: 1}}>
         <h1 className="font-bold text-xl mb-2 text-white p-4 bg-gray-900 overflow-hidden">Leaderboard</h1>
         {view == "addName" ? (<div className='h-[80%] w-full bg-white absolute flex items-center flex-col'>
@@ -82,7 +84,7 @@ export default function leaderboard({host, referer, leaderboard}) {
                   e.preventDefault();
                   setName(e.target.value);
                 }}></input>
-                <button disabled={submitting} className="bg-blue-900 disabled:bg-gray-400 disabled:border-gray-400 shadow-lg text-md py-1 px-4 rounded-3xl font-bold cursor-pointer border-blue-900 text-white border-2 hover:bg-transparent ease-in-out transition hover:text-black">{override ? "Override" : "Submit"}</button>
+                <button disabled={submitting} className={`bg-blue-900 disabled:bg-gray-400 disabled:border-gray-400 shadow-lg text-md py-1 px-4 rounded-3xl font-bold ${!submitting && "cursor-pointer"} border-blue-900 text-white border-2 ${!submitting && "hover:bg-transparent"} ease-in-out transition ${!submitting && "hover:text-black"}`}>{override ? "Override" : "Submit"}</button>
               </form>
               
             </div>
@@ -114,11 +116,11 @@ export default function leaderboard({host, referer, leaderboard}) {
            
 
           </table>
-          {referer == host && <div className='text-center'><a className='text-blue-700 hover:underline cursor-pointer text-center' onClick={() => setView("addName")}>Submit score</a></div>}
+          {addStats && <div className='text-center'><a className='text-blue-700 hover:underline cursor-pointer text-center' onClick={() => setView("addName")}>Submit score</a></div>}
         </div>
         }
       </motion.div>
-        <motion.button className="bg-white shadow-lg text-xl py-1 px-5 rounded-3xl font-bold cursor-pointer border-white text-black border-2 hover:bg-transparent ease-in-out transition hover:text-white" onClick={() => router.push('/play')}>Play<span>{referer == host && " again"}</span></motion.button>
+        <motion.button className="bg-white shadow-lg text-xl py-1 px-5 rounded-3xl font-bold cursor-pointer border-white text-black border-2 hover:bg-transparent ease-in-out transition hover:text-white" onClick={() => router.push('/play')}>Play<span>{addStats && " again"}</span></motion.button>
       </motion.div>
       <Footer />
     </div>
