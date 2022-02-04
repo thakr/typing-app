@@ -10,7 +10,7 @@ export default async (req, res) => {
     origin: 'https://www.quicktype.net/',
     optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
  });
- 
+
   const ip = req.headers["x-real-ip"] || req.connection.remoteAddress;
   const override = req.query.override;
  
@@ -24,7 +24,7 @@ export default async (req, res) => {
       if (override) {
         await prisma.LeaderEntry.update({
           where: {
-            ipv4 : ip,
+            id: sameIpUser.id,
           },
           data: {
             name: req.body.name,
