@@ -4,8 +4,10 @@ const axios = require('axios');
 import { useRouter } from 'next/router'
 import { motion } from "framer-motion";
 import prisma from '../db';
+import Footer from '../components/Footer';
 
 export default function leaderboard({host, referer, leaderboard}) {
+  host += "play"
   const router = useRouter()
   const {savedWPM, savedAccuracy} = router.query;
   const [name, setName] = useState('');
@@ -17,6 +19,7 @@ export default function leaderboard({host, referer, leaderboard}) {
     return b.wpm - a.wpm;
   })
   return (
+    <div>
       <motion.div className='flex w-[100%] h-screen items-center justify-center flex-col bg-blue-900' initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity:0}}>
         {referer == host  && <h1 className={`font-bold text-4xl z-10 text-white mb-5`}>Nice job!</h1>}
         <motion.div className="bg-white rounded-lg shadow-lg w-96 mb-5 h-96 overflow-auto relative" initial={{scale:0.25, opacity: 0}} animate={{scale: 1, opacity: 1}} transition={{duration: 1}}>
@@ -75,11 +78,11 @@ export default function leaderboard({host, referer, leaderboard}) {
                   }
                 }
               }>
-                <input required placeholder='Name' className='outline-none border-[1px] border-gray-500 px-3 py-1 focus:ring-2 rounded-full mr-5' onChange={(e) => {
+                <input required placeholder='Name' className='outline-none border-[1px] border-gray-400 px-3 py-1 focus:ring-2 rounded-full mr-5' onChange={(e) => {
                   e.preventDefault();
                   setName(e.target.value);
                 }}></input>
-                <button disabled={submitting} className="bg-blue-900 disabled:bg-gray-500 disabled:border-gray-500 shadow-lg text-md py-1 px-4 rounded-3xl font-bold cursor-pointer border-blue-900 text-white border-2 hover:bg-transparent ease-in-out transition hover:text-black">{override ? "Override" : "Submit"}</button>
+                <button disabled={submitting} className="bg-blue-900 disabled:bg-gray-400 disabled:border-gray-400 shadow-lg text-md py-1 px-4 rounded-3xl font-bold cursor-pointer border-blue-900 text-white border-2 hover:bg-transparent ease-in-out transition hover:text-black">{override ? "Override" : "Submit"}</button>
               </form>
               
             </div>
@@ -115,8 +118,11 @@ export default function leaderboard({host, referer, leaderboard}) {
         </div>
         }
       </motion.div>
-        <motion.button className="bg-white shadow-lg text-xl py-1 px-5 rounded-3xl font-bold cursor-pointer border-white text-black border-2 hover:bg-transparent ease-in-out transition hover:text-white" onClick={() => router.push('/')}>Play<span>{referer == host && " again"}</span></motion.button>
+        <motion.button className="bg-white shadow-lg text-xl py-1 px-5 rounded-3xl font-bold cursor-pointer border-white text-black border-2 hover:bg-transparent ease-in-out transition hover:text-white" onClick={() => router.push('/play')}>Play<span>{referer == host && " again"}</span></motion.button>
       </motion.div>
+      <Footer />
+    </div>
+      
   );
 }
 export async function getServerSideProps(context) {
